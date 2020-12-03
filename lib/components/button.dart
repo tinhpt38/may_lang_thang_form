@@ -9,14 +9,15 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
       color: Color(0xff353535),
       onPressed: onPress,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(90))),
       child: Text(
         label == null ? "Continue" : label,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
       ),
     );
   }

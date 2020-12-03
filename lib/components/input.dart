@@ -4,7 +4,7 @@ class Input extends StatelessWidget {
   final String title;
   final TextEditingController controller;
 
-  Input({this.title, this.controller});
+  Input({this.title = "", this.controller});
 
   @override
   Widget build(BuildContext context) {
