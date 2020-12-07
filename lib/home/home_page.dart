@@ -28,30 +28,35 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
           model.setError(false);
         }
       });
+
       return Scaffold(
         resizeToAvoidBottomPadding: false,
-        body: Container(
-          margin:
-              const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 16),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(42),
-              color: Colors.white,
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: Colors.black38, blurRadius: 6, offset: Offset(5, 5))
-              ]),
-          child: ListView(
-            children: [
-              buildPictureCover(model, size),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: buildStep(model, size),
+        body: Center(
+          child: Container(
+            margin:
+                const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 16),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(42),
+                color: Colors.white,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                      color: Colors.black38,
+                      blurRadius: 6,
+                      offset: Offset(5, 5))
+                ]),
+            child: ListView(
+              children: [
+                buildPictureCover(model, size),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: buildStep(model, size),
+                  ),
                 ),
-              ),
-              buildBottom(),
-            ],
+                buildBottom(),
+              ],
+            ),
           ),
         ),
       );
@@ -76,6 +81,8 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
         return buildRent(model);
       case step.Step.indexi:
         return buildIndexi(model);
+      case step.Step.submit:
+        return buildNote(model);
       default:
         return [];
     }
@@ -264,6 +271,33 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
           title: "Nhập khu và tổng số ghế",
           controller: model.indexController,
         ),
+        SizedBox(
+          width: double.infinity,
+          height: 120,
+        ),
         controllButton(model)
+      ];
+
+  List<Widget> buildNote(HomeModel model) => [
+        Text(
+          "Lưu ý",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Text("Đạt chỗ thành công chỉ khi khách hàng đã thanh toán thành công."),
+        Text("Kiểm tra chính xác sđt và xác nhận trên zalo."),
+        Text(
+            "Sau khi hoàn thành xong form trên quý khách có 12 tiếng để thanh toán. Nếu quá thời gian thì sẽ huỷ chỗ ngồi."),
+        SizedBox(
+          width: double.infinity,
+          height: 120,
+        ),
+        Center(
+          child: Button(
+            onPress: () async {
+              await model.mailto();
+            },
+            label: "Continue",
+          ),
+        ),
       ];
 }

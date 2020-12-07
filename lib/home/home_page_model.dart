@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:js' as js;
 
 class HomeModel extends ChangeNotifier {
   List<Step> _steps = [
@@ -63,15 +64,16 @@ class HomeModel extends ChangeNotifier {
         }
       default:
     }
-    _error = false;
+    // _error = false;
   }
 
-  void nextStep() {
+  void nextStep() async {
     checkError();
     if (!_error) {
       _stepIndex++;
       _currentStep = _steps[_stepIndex];
     }
+    // await sendEmail();
     notifyListeners();
   }
 
@@ -92,6 +94,11 @@ class HomeModel extends ChangeNotifier {
   void onIndexValueChange(IndexValue value) {
     _indexValue = value;
     notifyListeners();
+  }
+
+  Future<void> mailto() async {
+    String body = _nameController.text + " - " + _phoneController.text + " - ";
+    js.context.callMethod('alertMessage', [body]);
   }
 }
 

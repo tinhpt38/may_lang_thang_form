@@ -9,7 +9,7 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
       color: Color(0xff353535),
       onPressed: onPress,
       shape: RoundedRectangleBorder(
