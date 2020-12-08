@@ -10,10 +10,11 @@ class HomeModel extends ChangeNotifier {
     Step.indexi,
     Step.submit
   ];
+  Step _currentStep = Step.landing;
 
   List<Step> get steps => _steps;
 
-  Step _currentStep = Step.landing;
+  // Step _currentStep = Step.landing;
   Step get currentStep => _currentStep;
   int _stepIndex = 0;
   int get stepIndex => _stepIndex;
@@ -34,6 +35,22 @@ class HomeModel extends ChangeNotifier {
 
   IndexValue _indexValue = IndexValue.vip;
   IndexValue get indexValue => _indexValue;
+
+  bool _isSending = false;
+  bool get isSending => _isSending;
+
+  bool _mailSuccess = false;
+  bool get mailSuccess => _mailSuccess;
+
+  setSending(bool value) {
+    _isSending = value;
+    notifyListeners();
+  }
+
+  setMailSuccess(bool value) {
+    _mailSuccess = value;
+    notifyListeners();
+  }
 
   setError(bool val) {
     _error = val;
@@ -97,8 +114,41 @@ class HomeModel extends ChangeNotifier {
   }
 
   Future<void> mailto() async {
-    String body = _nameController.text + " - " + _phoneController.text + " - ";
-    js.context.callMethod('alertMessage', [body]);
+    setSending(true);
+    setMailSuccess(false);
+    String rent = "";
+    switch (indexValue) {
+      case IndexValue.vip:
+        rent = "VIP";
+        break;
+      case IndexValue.mid:
+        rent = "Phổ thông";
+        break;
+
+      case IndexValue.low:
+        rent = "Khán đài";
+        break;
+      case IndexValue.option:
+        rent = "Tuỳ chọn";
+        break;
+      default:
+    }
+
+    String body = "Họ tên khách: " +
+        _nameController.text +
+        "\nSố điện thoại: " +
+        _phoneController.text +
+        "\n Ghế: " +
+        rent +
+        "\n Vị trí: " +
+        indexController.text;
+    js.context.callMethod('alertMessage', [
+      body,
+      () {
+        setSending(false);
+        setMailSuccess(true);
+      }
+    ]);
   }
 }
 

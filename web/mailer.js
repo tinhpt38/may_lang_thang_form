@@ -1,15 +1,15 @@
-function alertMessage(text) {
-    alert(text)
+function alertMessage(text, callback) {
+    
     Email.send({
  	Host: "smtp.gmail.com",
  	Username : "tinhpt.38@gmail.com",
  	Password : "bvochkfeuruehsiv",
  	To : 'tinhpt.contact@gmail.com',
  	From : "tinhpt.38@gmail.com",
- 	Subject : "email form flutter",
+ 	Subject : "Email đặt chỗ ngồi tại Mây Lang Thang",
  	Body : text,
  	}).then(
-         message => alert("mail sent successfully")
+         message => callback()
          
     );
     // debugger;
