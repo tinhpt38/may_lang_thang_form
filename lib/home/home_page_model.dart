@@ -117,6 +117,8 @@ class HomeModel extends ChangeNotifier {
     setSending(true);
     setMailSuccess(false);
     String rent = "";
+    String indexOnBoard =
+        indexController.text.isEmpty ? "Chưa chọn ghế" : indexController.text;
     switch (indexValue) {
       case IndexValue.vip:
         rent = "VIP";
@@ -136,12 +138,14 @@ class HomeModel extends ChangeNotifier {
 
     String body = "Họ tên khách: " +
         _nameController.text +
-        "\nSố điện thoại: " +
+        "\n- Số điện thoại: " +
         _phoneController.text +
-        "\n Ghế: " +
+        "\n- Ghế: " +
         rent +
-        "\n Vị trí: " +
-        indexController.text;
+        "\n- Vị trí: " +
+        indexOnBoard +
+        "\n- Ngày tạo: " +
+        DateTime.now().toString();
     js.context.callMethod('alertMessage', [
       body,
       () {

@@ -30,14 +30,24 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
         }
         if (model.isSending) {
           showTopSnackBar(
-            context,
-            CustomSnackBar.info(
-              message: "Đang gửi email xác nhận yêu cầu! Đang mở Zalo",
-            ),
-          );
+              context,
+              CustomSnackBar.info(
+                message: "Đang gửi email xác nhận yêu cầu!",
+              ));
+        }
+        if (!model.isSending && model.mailSuccess) {
+          showTopSnackBar(
+              context,
+              CustomSnackBar.success(
+                message: "Gửi email thành công! Đang mở Zalo",
+              ));
+        }
+        if (model.mailSuccess) {
           String url = "https://zalo.me/0352974899";
           if (await canLaunch(url)) {
-            launch(url);
+            Future.delayed(Duration(milliseconds: 1000), () {
+              launch(url);
+            });
           } else {
             showTopSnackBar(
               context,
@@ -46,14 +56,6 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
               ),
             );
           }
-        }
-        if (!model.isSending && model.mailSuccess) {
-          showTopSnackBar(
-            context,
-            CustomSnackBar.success(
-              message: "Gửi email thành công!",
-            ),
-          );
         }
       });
       return ResponsiveBuilder(builder: (context, sizeInfo) {
@@ -145,10 +147,32 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
         child: Text("B2: Chuyển khoản vào tài khoản"),
       ),
       Padding(
-        padding: const EdgeInsets.only(top: 12, bottom: 12, right: 24),
-        child: Text(
-            "Chủ tài khoảng: PHAN TRUNG TÍNH \nAgribank: 5400205376050 \nChi nhánh: Lâm Đồng"),
-      ),
+          padding: const EdgeInsets.only(top: 12, bottom: 12, right: 24),
+          child: Wrap(
+            children: [
+              Text("Chủ tài khoản:"),
+              Text("HOÀNG THIÊN ÂN",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            ],
+          )),
+      Padding(
+          padding: const EdgeInsets.only(top: 12, bottom: 12, right: 24),
+          child: Wrap(
+            children: [
+              Text("Vietcombank:"),
+              SelectableText("0561000620269",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            ],
+          )),
+      Padding(
+          padding: const EdgeInsets.only(top: 12, bottom: 12, right: 24),
+          child: Wrap(
+            children: [
+              Text("Chi nhánh:"),
+              Text("Lâm Đồng",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            ],
+          )),
       Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 12, right: 24),
         child: Text("B3: Gửi hình ảnh chuyển khoảng thành công vào ZALO:"),
@@ -156,7 +180,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
       Padding(
         padding: const EdgeInsets.only(top: 0, bottom: 12, right: 24),
         child: SelectableText(
-          "0352974899",
+          "0777796007",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
@@ -176,17 +200,26 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
   Widget buildPictureCoverMobile(HomeModel model, Size size) {
     if (model.currentStep == step.Step.indexi ||
         model.currentStep == step.Step.rent) {
-      return buildPrictureIndex(size);
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: buildPrictureIndex(size),
+      );
     }
-    return buildPictureMainLogo(size);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: buildPictureMainLogo(size),
+    );
   }
 
   Widget buildPictureMainLogoWeb(Size size) => Container(
         height: size.height * 1 / 3,
         // width: size.width * 1 / 8,
-        child: Image.asset(
-          "assets/images/logo_top_web.png",
-          scale: 2,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 12),
+          child: Image.asset(
+            "assets/images/logo_top_web.png",
+            scale: 2,
+          ),
         ),
       );
 
@@ -199,7 +232,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
       );
 
   Widget buildPrictureIndex(Size size) => Container(
-        height: size.height * 1 / 3,
+        height: size.height * 1 / 2,
         child: Image.asset(
           "assets/images/index.png",
           scale: 0.8,
@@ -215,7 +248,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
             Container(
                 child: Image.asset(
               "assets/images/logo_bot.png",
-              scale: 4,
+              scale: 4.5,
             )),
             Expanded(
               child: Padding(
@@ -225,13 +258,20 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
                   children: [
                     Text("Hotline"),
                     Text(
-                      "09xx.xxx.xxx (Mr. Ân Hoàng)",
+                      "09xx.xxx.xxx (Mr. Ân)",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
-                    Text("09xx.xxx.xxx (Mrs. Giang)",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14)),
+                    Row(
+                      children: [
+                        SelectableText("0777796007",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14)),
+                        Text("(Mrs. Giang)",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14)),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -242,16 +282,16 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
 
   List<Widget> buildName(HomeModel model, Size size) => [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Text("HỌ VÀ TÊN",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Input(title: "HỌ VÀ TÊN", controller: model.nameController),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: controllButton(model),
         ),
         SizedBox(
@@ -262,17 +302,17 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
 
   List<Widget> buildPhone(HomeModel model, Size size) => [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Text("SỐ ĐIỆN THOẠI",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child:
               Input(title: "SỐ ĐIỆN THOẠI", controller: model.phoneController),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: controllButton(model),
         ),
         SizedBox(
@@ -334,24 +374,37 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
       ];
 
   List<Widget> buildNote(HomeModel model) => [
-        Text(
-          "Lưu ý",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Lưu ý",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
-        Text("Đạt chỗ thành công chỉ khi khách hàng đã thanh toán thành công."),
-        Text("Kiểm tra chính xác sđt và xác nhận trên zalo."),
-        Text(
-            "Sau khi hoàn thành xong form trên quý khách có 12 tiếng để thanh toán. Nếu quá thời gian thì sẽ huỷ chỗ ngồi."),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+              "Đạt chỗ thành công chỉ khi khách hàng đã thanh toán thành công."),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Kiểm tra chính xác sđt và xác nhận trên zalo."),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+              "Sau khi hoàn thành xong form trên quý khách có 12 tiếng để thanh toán. Nếu quá thời gian thì sẽ huỷ chỗ ngồi."),
+        ),
         SizedBox(
           width: double.infinity,
-          height: 120,
+          height: 100,
         ),
         Center(
           child: Button(
             onPress: () async {
               await model.mailto();
             },
-            label: "Continue",
+            label: "Submit",
           ),
         ),
       ];
