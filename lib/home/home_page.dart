@@ -43,7 +43,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
               ));
         }
         if (model.mailSuccess) {
-          String url = "https://zalo.me/0352974899";
+          String url = "https://zalo.me/0969896164";
           if (await canLaunch(url)) {
             Future.delayed(Duration(milliseconds: 1000), () {
               launch(url);
@@ -180,7 +180,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
       Padding(
         padding: const EdgeInsets.only(top: 0, bottom: 12, right: 24),
         child: SelectableText(
-          "0777796007",
+          "0969896164",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
@@ -257,21 +257,22 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Hotline"),
-                    Text(
-                      "09xx.xxx.xxx (Mr. Ân)",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                    ),
-                    Row(
-                      children: [
-                        SelectableText("0777796007",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14)),
-                        Text("(Mrs. Giang)",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14)),
-                      ],
-                    ),
+                    SelectableText("0877339889",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14)),
+                    SelectableText("0777796007",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14)),
+                    // Row(
+                    //   children: [
+                    //     SelectableText("0777796007",
+                    //         style: TextStyle(
+                    //             fontWeight: FontWeight.bold, fontSize: 14)),
+                    //     Text("(Mrs. Giang)",
+                    //         style: TextStyle(
+                    //             fontWeight: FontWeight.bold, fontSize: 14)),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -325,7 +326,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
         Text("Bảng giá chỗ ngồi",
             style: TextStyle(fontWeight: FontWeight.bold)),
         ListTile(
-          title: Text("Ghế VIP"),
+          title: Text("Khu VIP - 850.000 VNĐ"),
           leading: Radio(
             value: step.IndexValue.vip,
             groupValue: model.indexValue,
@@ -333,7 +334,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
           ),
         ),
         ListTile(
-          title: Text("Ghế Phổ thông"),
+          title: Text("Khu Lang Thang - 650.000 VNĐ"),
           leading: Radio(
             value: step.IndexValue.mid,
             groupValue: model.indexValue,
@@ -341,7 +342,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
           ),
         ),
         ListTile(
-          title: Text("Ghế khán đài"),
+          title: Text("Khu khán đài - 400.000 VNĐ"),
           leading: Radio(
             value: step.IndexValue.low,
             groupValue: model.indexValue,

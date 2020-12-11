@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:js' as js;
+import 'dart:html' as html;
+
+import 'package:may_lang_thang/home/email_template.dart';
 
 class HomeModel extends ChangeNotifier {
   List<Step> _steps = [
@@ -121,33 +126,41 @@ class HomeModel extends ChangeNotifier {
         indexController.text.isEmpty ? "Chưa chọn ghế" : indexController.text;
     switch (indexValue) {
       case IndexValue.vip:
-        rent = "VIP";
+        rent = "Khu VIP - 850.000 VNĐ";
         break;
       case IndexValue.mid:
-        rent = "Phổ thông";
+        rent = "Khu Lang Thang - 650.000 VNĐ";
         break;
 
       case IndexValue.low:
-        rent = "Khán đài";
+        rent = "Khu khán đài - 400.000 VNĐ";
         break;
       case IndexValue.option:
-        rent = "Tuỳ chọn";
+        rent = "Chọn sau khi liên hệ";
         break;
       default:
     }
 
-    String body = "Họ tên khách: " +
-        _nameController.text +
-        "\n- Số điện thoại: " +
-        _phoneController.text +
-        "\n- Ghế: " +
-        rent +
-        "\n- Vị trí: " +
-        indexOnBoard +
-        "\n- Ngày tạo: " +
-        DateTime.now().toString();
+    DateTime now = DateTime.now();
+    String creatAt = now.day.toString() +
+        "/" +
+        now.month.toString() +
+        "/" +
+        now.year.toString() +
+        " - " +
+        now.hour.toString() +
+        ":" +
+        now.minute.toString();
+
+    // html.querySelector('#customerName').text = _nameController.text;
+    // html.querySelector('#customerPhone').text = _phoneController.text;
+    // html.querySelector("#rent").text = rent;
+    // html.querySelector('#indexOnBoard').text = indexOnBoard;
+    // html.querySelector("#creatAt").text = "";
+
     js.context.callMethod('alertMessage', [
-      body,
+      emailTemplate(_nameController.text, _phoneController.text, rent,
+          indexOnBoard, creatAt),
       () {
         setSending(false);
         setMailSuccess(true);
