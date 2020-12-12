@@ -1,5 +1,7 @@
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:matt_q/matt_q.dart';
+import 'package:may_lang_thang/auth/admin_page.dart';
 import 'package:may_lang_thang/components/button.dart';
 import 'package:may_lang_thang/components/input.dart';
 import 'package:may_lang_thang/home/home_page_model.dart';
@@ -15,9 +17,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends MattQ<HomePage, HomeModel> {
+  HomeModel _model;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _model.getShow();
+    });
+  }
+
   @override
   Function(BuildContext context, HomeModel model, Widget child) builder() {
     return (context, model, child) {
+      _model = model;
       Future.delayed(Duration.zero, () async {
         if (model.error) {
           showTopSnackBar(
@@ -57,6 +70,11 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
             );
           }
         }
+        if (model.loginSuccess) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => AdminPage()));
+          model.setLoginSuccess(false);
+        }
       });
       return ResponsiveBuilder(builder: (context, sizeInfo) {
         if (sizeInfo.deviceScreenType == DeviceScreenType.desktop) {
@@ -87,6 +105,8 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
         return buildName(model, size);
       case step.Step.phone:
         return buildPhone(model, size);
+      case step.Step.show:
+        return buildSelectShow(model);
       case step.Step.rent:
         return buildRent(model);
       case step.Step.indexi:
@@ -99,19 +119,24 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
   }
 
   List<Widget> buildStepWeb(HomeModel model, Size size) {
+    if (model.isStepLogin) {
+      return buildLogin(model);
+    }
     switch (model.currentStep) {
       case step.Step.landing:
-        return buildLanding(model)..add(buildBottom());
+        return buildLanding(model)..add(buildBottom(model));
       case step.Step.name:
-        return buildName(model, size)..add(buildBottom());
+        return buildName(model, size)..add(buildBottom(model));
       case step.Step.phone:
-        return buildPhone(model, size)..add(buildBottom());
+        return buildPhone(model, size)..add(buildBottom(model));
+      case step.Step.show:
+        return buildSelectShow(model);
       case step.Step.rent:
         return buildRentWeb(model, size);
       case step.Step.indexi:
         return buildIndexWeb(model, size);
       case step.Step.submit:
-        return buildNote(model)..add(buildBottom());
+        return buildNote(model)..add(buildBottom(model));
       default:
         return [];
     }
@@ -140,7 +165,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
       Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 12, right: 32),
         child: Text(
-            "B1: Click vào đường link và điền thông tin vào form (Họ và tên, SĐT, Khu ngồi và số ghế"),
+            "B1: Click vào đường link và điền thông tin vào form (Họ và tên, SĐT, Khu ngồi và số ghế)"),
       ),
       Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 12, right: 24),
@@ -207,23 +232,19 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
     }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      child: buildPictureMainLogo(size),
+      child: buildPictureMainLogo(model, size),
     );
   }
 
-  Widget buildPictureMainLogoWeb(Size size) => Container(
+  Widget buildPictureMainLogoWeb(HomeModel model, Size size) => Container(
         height: size.height * 1 / 3,
-        // width: size.width * 1 / 8,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 12),
-          child: Image.asset(
-            "assets/images/logo_top_web.png",
-            scale: 2,
-          ),
+        child: Image.asset(
+          "assets/images/logo_top_web.png",
+          scale: 2,
         ),
       );
 
-  Widget buildPictureMainLogo(Size size) => Container(
+  Widget buildPictureMainLogo(HomeModel model, Size size) => Container(
         height: size.height * 1 / 4,
         child: Image.asset(
           "assets/images/logo_top.png",
@@ -233,47 +254,57 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
 
   Widget buildPrictureIndex(Size size) => Container(
         height: size.height * 1 / 2,
-        child: Image.asset(
-          "assets/images/index.png",
-          scale: 0.8,
+        child: Stack(
+          children: [
+            Image.asset(
+              "assets/images/index.png",
+              scale: 0.8,
+            ),
+          ],
         ),
       );
 
-  Widget buildBottom() => Container(
+  Widget buildBottom(HomeModel model) => Container(
         margin: const EdgeInsets.only(left: 28, right: 28, top: 12, bottom: 12),
         decoration: BoxDecoration(
             border: Border(top: BorderSide(color: Colors.grey, width: 1))),
-        child: Row(
+        child: Column(
           children: [
-            Container(
-                child: Image.asset(
-              "assets/images/logo_bot.png",
-              scale: 4.5,
-            )),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Hotline"),
-                    SelectableText("0877339889",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14)),
-                    SelectableText("0777796007",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14)),
-                    // Row(
-                    //   children: [
-                    //     SelectableText("0777796007",
-                    //         style: TextStyle(
-                    //             fontWeight: FontWeight.bold, fontSize: 14)),
-                    //     Text("(Mrs. Giang)",
-                    //         style: TextStyle(
-                    //             fontWeight: FontWeight.bold, fontSize: 14)),
-                    //   ],
-                    // ),
-                  ],
+            Row(
+              children: [
+                Container(
+                    child: Image.asset(
+                  "assets/images/logo_bot.png",
+                  scale: 4.5,
+                )),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Hotline"),
+                        SelectableText("0877339889",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14)),
+                        SelectableText("0777796007",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Visibility(
+              visible: !model.isStepLogin,
+              child: InkWell(
+                onTap: () {
+                  model.setIsStepLogin(true);
+                },
+                child: Text(
+                  "Đăng nhập",
+                  style: TextStyle(color: Colors.blue),
                 ),
               ),
             ),
@@ -321,12 +352,58 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
           height: size.height * 1 / 5,
         ),
       ];
+  List<Widget> buildSelectShow(HomeModel model) => [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Text("TÊN CA SĨ (Tiếng Việt có dấu)",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Input(
+            title: "Ví dụ: Bùi Anh Tuấn",
+            controller: model.showControler,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Text("NGÀY DIỄN",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: DateTimePicker(
+            dateMask: 'dd MM, yyyy',
+            initialValue: DateTime.now().toString(),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2100),
+            dateLabelText: 'CHỌN NGÀY DIỄN',
+            onChanged: (val) {
+              model.setBuildDate(val);
+            },
+          ),
+        ),
+        controllButton(model),
+      ];
 
   List<Widget> buildRent(HomeModel model) => [
-        Text("Bảng giá chỗ ngồi",
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Bảng giá chỗ ngồi",
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Show diễn ca sĩ: ${model.selectShow.singer}",
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Ngày diễn: ${model.buildDate}",
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
         ListTile(
-          title: Text("Khu VIP - 850.000 VNĐ"),
+          title: Text("Khu VIP - ${model.selectShow.vipRent} VNĐ"),
           leading: Radio(
             value: step.IndexValue.vip,
             groupValue: model.indexValue,
@@ -334,7 +411,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
           ),
         ),
         ListTile(
-          title: Text("Khu Lang Thang - 650.000 VNĐ"),
+          title: Text("Khu Lang Thang - ${model.selectShow.midRent} VNĐ"),
           leading: Radio(
             value: step.IndexValue.mid,
             groupValue: model.indexValue,
@@ -342,7 +419,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
           ),
         ),
         ListTile(
-          title: Text("Khu khán đài - 400.000 VNĐ"),
+          title: Text("Khu khán đài - ${model.selectShow.normalRent} VNĐ"),
           leading: Radio(
             value: step.IndexValue.low,
             groupValue: model.indexValue,
@@ -420,7 +497,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
                 margin: const EdgeInsets.only(right: 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: buildIndexi(model)..add(buildBottom()),
+                  children: buildIndexi(model)..add(buildBottom(model)),
                 ),
               ),
             ),
@@ -437,12 +514,51 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
               child: Container(
                 margin: const EdgeInsets.only(right: 32),
                 child: Column(
-                  children: buildRent(model)..add(buildBottom()),
+                  children: buildRent(model)..add(buildBottom(model)),
                 ),
               ),
             ),
           ],
         ),
+      ];
+
+  List<Widget> buildLogin(HomeModel model) => [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            "ĐĂNG NHẬP",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Input(
+            controller: model.userController,
+            title: "TÊN ĐĂNG NHẬP",
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Input(
+            controller: model.pwdController,
+            title: "MẬT KHẨU",
+            obscureText: true,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Button(label: "ĐĂNG NHẬP", onPress: model.login),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FlatButton(
+            onPressed: () {
+              model.setIsStepLogin(false);
+            },
+            child: Text("Tiếp tục đăng kí chỗ ngồi"),
+          ),
+        )
       ];
 
   double getWidthWeb(HomeModel model, Size size) {
@@ -462,7 +578,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
       body: Center(
         child: ListView(
           children: [
-            buildPictureMainLogoWeb(size),
+            buildPictureMainLogoWeb(model, size),
             Center(
               child: Container(
                 width: getWidthWeb(model, size),
@@ -516,7 +632,7 @@ class _HomePageState extends MattQ<HomePage, HomeModel> {
                   children: buildStepMobile(model, size),
                 ),
               ),
-              buildBottom(),
+              buildBottom(model),
             ],
           ),
         ),

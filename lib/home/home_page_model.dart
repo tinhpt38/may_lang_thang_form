@@ -1,16 +1,19 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:js' as js;
 import 'dart:html' as html;
 
 import 'package:may_lang_thang/home/email_template.dart';
+import 'package:may_lang_thang/model/show.dart';
 
 class HomeModel extends ChangeNotifier {
   List<Step> _steps = [
     Step.landing,
     Step.name,
     Step.phone,
+    Step.show,
     Step.rent,
     Step.indexi,
     Step.submit
@@ -18,19 +21,33 @@ class HomeModel extends ChangeNotifier {
   Step _currentStep = Step.landing;
 
   List<Step> get steps => _steps;
+  bool _isStepLogin = false;
+  bool _loginSuccess = false;
+  bool get isStepLogin => _isStepLogin;
+  bool get loginSuccess => _loginSuccess;
 
-  // Step _currentStep = Step.landing;
   Step get currentStep => _currentStep;
   int _stepIndex = 0;
   int get stepIndex => _stepIndex;
 
+  String _dropValue = "";
+  String get dropValue => _dropValue;
+  List<String> _dropItems = List();
+  List<String> get dropItems => _dropItems;
+
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _indexController = TextEditingController();
+  TextEditingController _userController = TextEditingController();
+  TextEditingController _pwdController = TextEditingController();
+  TextEditingController _showControler = TextEditingController();
 
   TextEditingController get nameController => _nameController;
   TextEditingController get phoneController => _phoneController;
   TextEditingController get indexController => _indexController;
+  TextEditingController get userController => _userController;
+  TextEditingController get pwdController => _pwdController;
+  TextEditingController get showControler => _showControler;
 
   bool _error = false;
   String _errMessage = "";
@@ -46,6 +63,63 @@ class HomeModel extends ChangeNotifier {
 
   bool _mailSuccess = false;
   bool get mailSuccess => _mailSuccess;
+
+  String _user = "admin";
+  String _password = "@cps@admin@1211045";
+
+  List<Show> _shows = List();
+  List<Show> get shows => _shows;
+
+  final databaseRef = FirebaseFirestore.instance;
+
+  String _buildDate = DateTime.now().toString();
+  String get buildDate => _buildDate;
+
+  setBuildDate(String val) {
+    _buildDate = val;
+    notifyListeners();
+  }
+
+  Future<void> getShow() async {
+    _shows.clear();
+    await databaseRef.collection('show').get().then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((d) {
+        DateTime today = DateTime.now();
+        Show show = Show.fromJson(d.data());
+        DateTime buildDate = DateTime.parse(show.buildDate);
+        if (buildDate.day >= today.day &&
+            buildDate.month >= today.month &&
+            buildDate.year >= today.year) {
+          _shows.add(show);
+        }
+      });
+    });
+    notifyListeners();
+  }
+
+  login() {
+    if (_userController.text == _user && _pwdController.text == _password) {
+      _loginSuccess = true;
+      _error = false;
+      _errMessage = "";
+      _isStepLogin = false;
+    } else {
+      _loginSuccess = false;
+      _errMessage = "Thông tin tài khoản đăng nhập sai!";
+      _error = true;
+    }
+    notifyListeners();
+  }
+
+  setLoginSuccess(bool val) {
+    _loginSuccess = val;
+    notifyListeners();
+  }
+
+  setIsStepLogin(bool val) {
+    _isStepLogin = val;
+    notifyListeners();
+  }
 
   setSending(bool value) {
     _isSending = value;
@@ -84,10 +158,45 @@ class HomeModel extends ChangeNotifier {
           }
           break;
         }
+      case Step.show:
+        {
+          _error = true;
+          if (_showControler.text.isEmpty) {
+            _errMessage = "Nhập tên ca sĩ";
+          } else {
+            _selectShow = findShow();
+            if (_selectShow == null) {
+              _error = true;
+              _errMessage =
+                  "Không có buổi biểu diễn nào, chọn lại ngày hoặc tên ca sĩ";
+            }
+          }
+
+          break;
+        }
       default:
     }
     // _error = false;
   }
+
+  Show findShow() {
+    DateTime dateIn = DateTime.parse(_buildDate);
+    for (int i = 0; i < _shows.length; i++) {
+      Show e = _shows[i];
+      DateTime dateFromShow = DateTime.parse(e.buildDate);
+      if (e.singer.toLowerCase() == _showControler.text.trim().toLowerCase() &&
+          (dateIn.day == dateFromShow.day &&
+              dateIn.month == dateFromShow.month &&
+              dateIn.year == dateFromShow.year)) {
+        _error = false;
+        return e;
+      }
+    }
+    return null;
+  }
+
+  Show _selectShow;
+  Show get selectShow => _selectShow;
 
   void nextStep() async {
     checkError();
@@ -151,13 +260,6 @@ class HomeModel extends ChangeNotifier {
         now.hour.toString() +
         ":" +
         now.minute.toString();
-
-    // html.querySelector('#customerName').text = _nameController.text;
-    // html.querySelector('#customerPhone').text = _phoneController.text;
-    // html.querySelector("#rent").text = rent;
-    // html.querySelector('#indexOnBoard').text = indexOnBoard;
-    // html.querySelector("#creatAt").text = "";
-
     js.context.callMethod('alertMessage', [
       emailTemplate(_nameController.text, _phoneController.text, rent,
           indexOnBoard, creatAt),
@@ -169,6 +271,6 @@ class HomeModel extends ChangeNotifier {
   }
 }
 
-enum Step { landing, name, phone, rent, indexi, submit }
+enum Step { landing, name, phone, show, rent, indexi, submit }
 
 enum IndexValue { vip, mid, low, option }
