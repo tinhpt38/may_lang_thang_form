@@ -26,7 +26,6 @@ class _AdminPageState extends MattQ<AdminPage, AdminModel> {
 
   @override
   Function(BuildContext context, AdminModel model, Widget child) builder() {
-    Size size = MediaQuery.of(context).size;
     return (context, model, child) {
       _model = model;
       Future.delayed(Duration.zero, () {
@@ -138,13 +137,6 @@ class _AdminPageState extends MattQ<AdminPage, AdminModel> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: Input(
-          //     title: "VÍ DỤ: 20/12/2020",
-          //     controller: _model.buildDateController,
-          //   ),
-          // ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DateTimePicker(
@@ -153,7 +145,7 @@ class _AdminPageState extends MattQ<AdminPage, AdminModel> {
               firstDate: DateTime(2000),
               lastDate: DateTime(2100),
               dateLabelText: 'CHỌN NGÀY DIỄN',
-              onSaved: (val) {
+              onChanged: (val) {
                 model.setBuildDate(val);
               },
             ),

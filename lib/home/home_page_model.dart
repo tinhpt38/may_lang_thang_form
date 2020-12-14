@@ -235,14 +235,14 @@ class HomeModel extends ChangeNotifier {
         indexController.text.isEmpty ? "Chưa chọn ghế" : indexController.text;
     switch (indexValue) {
       case IndexValue.vip:
-        rent = "Khu VIP - 850.000 VNĐ";
+        rent = "Khu VIP - ${selectShow.vipRent} VNĐ";
         break;
       case IndexValue.mid:
-        rent = "Khu Lang Thang - 650.000 VNĐ";
+        rent = "Khu Lang Thang - ${selectShow.midRent} VNĐ";
         break;
 
       case IndexValue.low:
-        rent = "Khu khán đài - 400.000 VNĐ";
+        rent = "Khu khán đài - ${selectShow.normalRent} VNĐ";
         break;
       case IndexValue.option:
         rent = "Chọn sau khi liên hệ";
@@ -260,14 +260,28 @@ class HomeModel extends ChangeNotifier {
         now.hour.toString() +
         ":" +
         now.minute.toString();
-    js.context.callMethod('alertMessage', [
-      emailTemplate(_nameController.text, _phoneController.text, rent,
-          indexOnBoard, creatAt),
-      () {
-        setSending(false);
-        setMailSuccess(true);
-      }
-    ]);
+    DateTime a = DateTime.parse(selectShow.buildDate);
+    String singerDate = "";
+    singerDate = a.day.toString() +
+        "/" +
+        a.month.toString() +
+        "/" +
+        a.year.toString() +
+        js.context.callMethod('alertMessage', [
+          emailTemplate(
+            name: _nameController.text,
+            phone: _phoneController.text,
+            rent: rent,
+            indexOnboard: indexOnBoard,
+            now: creatAt,
+            singer: selectShow.singer,
+            buildate: singerDate,
+          ),
+          () {
+            setSending(false);
+            setMailSuccess(true);
+          }
+        ]);
   }
 }
 

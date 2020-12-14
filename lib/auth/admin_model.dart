@@ -27,13 +27,11 @@ class AdminModel extends ChangeNotifier {
   }
 
   TextEditingController _singerController = TextEditingController();
-  // TextEditingController _buildDateController = TextEditingController();
   TextEditingController _vipController = TextEditingController();
   TextEditingController _midController = TextEditingController();
   TextEditingController _normalController = TextEditingController();
 
   TextEditingController get singerController => _singerController;
-  // TextEditingController get buildDateController => _buildDateController;
   TextEditingController get vipController => _vipController;
   TextEditingController get midController => _midController;
   TextEditingController get normalController => _normalController;
