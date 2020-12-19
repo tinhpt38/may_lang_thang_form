@@ -35,6 +35,8 @@ dependencies:
   url_launcher: ^5.7.10
   cloud_firestore: ^0.14.4
   date_time_picker: ^1.1.0
+  string_similarity: ^1.1.0
+  tiengviet: ^0.4.1
 
 dev_dependencies:
   flutter_test:

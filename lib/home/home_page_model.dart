@@ -7,6 +7,8 @@ import 'dart:html' as html;
 
 import 'package:may_lang_thang/home/email_template.dart';
 import 'package:may_lang_thang/model/show.dart';
+import 'package:string_similarity/string_similarity.dart';
+import 'package:tiengviet/tiengviet.dart';
 
 class HomeModel extends ChangeNotifier {
   List<Step> _steps = [
@@ -77,6 +79,7 @@ class HomeModel extends ChangeNotifier {
 
   setBuildDate(String val) {
     _buildDate = val;
+    print(val);
     notifyListeners();
   }
 
@@ -84,16 +87,18 @@ class HomeModel extends ChangeNotifier {
     _shows.clear();
     await databaseRef.collection('show').get().then((QuerySnapshot snapshot) {
       snapshot.docs.forEach((d) {
-        DateTime today = DateTime.now();
+        // DateTime today = DateTime.now();
         Show show = Show.fromJson(d.data());
-        DateTime buildDate = DateTime.parse(show.buildDate);
-        if (buildDate.day >= today.day &&
-            buildDate.month >= today.month &&
-            buildDate.year >= today.year) {
-          _shows.add(show);
-        }
+        _shows.add(show);
+        // DateTime buildDate = DateTime.parse(show.buildDate);
+        // if (buildDate.day >= today.day &&
+        //     buildDate.month >= today.month &&
+        //     buildDate.year >= today.year) {
+        //   _shows.add(show);
+        // }
       });
     });
+    print(_shows);
     notifyListeners();
   }
 
@@ -184,7 +189,22 @@ class HomeModel extends ChangeNotifier {
     for (int i = 0; i < _shows.length; i++) {
       Show e = _shows[i];
       DateTime dateFromShow = DateTime.parse(e.buildDate);
-      if (e.singer.toLowerCase() == _showControler.text.trim().toLowerCase() &&
+      // if (e.singer.toLowerCase() == _showControler.text.trim().toLowerCase() &&
+      //     (dateIn.day == dateFromShow.day &&
+      //         dateIn.month == dateFromShow.month &&
+      //         dateIn.year == dateFromShow.year)) {
+      //   _error = false;
+      //   return e;
+      // }
+
+      String singer = TiengViet.parse(e.singer);
+      String userInput = TiengViet.parse(_showControler.text.trim());
+      // print("singer: " + singer);
+      // print("user input: " + userInput);
+      double precentMatch =
+          userInput.toLowerCase().similarityTo(singer.toLowerCase()); // → 0.8
+      // print(precentMatch);
+      if (precentMatch >= 0.8 &&
           (dateIn.day == dateFromShow.day &&
               dateIn.month == dateFromShow.month &&
               dateIn.year == dateFromShow.year)) {
